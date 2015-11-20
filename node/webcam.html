@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="stuff, to, help, search, engines, not" name="keywords">
+    <meta content="What this page is about." name="description">
+    <meta content="Display Webcam Stream" name="title">
+    <title>Tomar fotos por voz</title>
+</head>
+  
+<body>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="snap">Snap Photo</button>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <script>
+        window.addEventListener("DOMContentLoaded", function() {
+
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+            var video = document.getElementById("video");
+            var videoObj = { "video": true };
+            var errBack = function(error) {
+                console.log("Video capture error: ", error.code); 
+            };
+
+            if(navigator.getUserMedia) {
+                navigator.getUserMedia(videoObj, function(stream) {
+                    video.src = stream;
+                    video.play();
+                }, errBack);
+            }
+            else if(navigator.webkitGetUserMedia) {
+                navigator.webkitGetUserMedia(videoObj, function(stream){
+                    video.src = window.webkitURL.createObjectURL(stream);
+                    video.play();
+                }, errBack);
+            }
+            else if(navigator.mozGetUserMedia) {
+                navigator.mozGetUserMedia(videoObj, function(stream){
+                    video.src = window.URL.createObjectURL(stream);
+                    video.play();
+                }, errBack);
+            }
+        }, 
+        false);
+
+document.getElementById("snap").addEventListener("click", function() {
+    tomarFoto();
+});
+
+function tomarFoto () {
+    canvas.getContext("2d").drawImage(video, 0, 0, 640, 480);
+    var image = new Image();
+    image.src = canvas.toDataURL("image/png");
+    return image;
+}
+</script>
+</body>
+</html>

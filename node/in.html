@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Recibir datos</title>
+	<script src="../bs/js/jquery.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	<script>
+	function getParams(url){
+        var regex = /[?&]([^=#]+)=([^&#]*)/g,
+            params = {},
+            match;
+        while(match = regex.exec(url)) {
+            params[match[1]] = match[2];
+        }
+        return params;
+    }
+
+	</script>
+</body>
+</html>

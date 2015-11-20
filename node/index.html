@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Prueba</title>
+</head>
+<body>
+    
+    
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        window.addEventListener("load", function () {
+            console.log("cargado");
+            tomarFotoInicio();
+        });
+
+        function tomarFotoInicio () {
+            if (getUrlVars()["action"]=="foto"){
+                console.log("url valida");
+                socket.emit("req_tomar_foto");
+            };
+        }
+
+        var socket = io.connect(document.location.href);
+        socket.on("connect", function () {
+            console.log("Connected!");
+        });
+        socket.on("tomar_foto", function (data) {
+            console.log("foto");
+            tomarFoto();
+        });
+
+        function button_clicked(button){
+            socket.emit("event_button_clicked",{ text: document.getElementById("intext").value });
+        }
+
+        function tomarFoto () {
+            canvas.getContext("2d").drawImage(video, 0, 0, 640, 480);
+            var image = new Image();
+            image.src = canvas.toDataURL("image/png");
+            return image;
+        }
+
+        function getUrlVars() {
+            var vars = {};
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+                function(m,key,value) {
+                  vars[key] = value;
+              });
+            return vars;
+        }
+
+        window.addEventListener("DOMContentLoaded", function() {
+
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+            var video = document.getElementById("video");
+            var videoObj = { "video": true };
+            var errBack = function(error) {
+                console.log("Video capture error: ", error.code); 
+            };
+
+            if(navigator.getUserMedia) {
+                navigator.getUserMedia(videoObj, function(stream) {
+                    video.src = stream;
+                    video.play();
+                }, errBack);
+            }
+            else if(navigator.webkitGetUserMedia) {
+                navigator.webkitGetUserMedia(videoObj, function(stream){
+                    video.src = window.webkitURL.createObjectURL(stream);
+                    video.play();
+                }, errBack);
+            }
+            else if(navigator.mozGetUserMedia) {
+                navigator.mozGetUserMedia(videoObj, function(stream){
+                    video.src = window.URL.createObjectURL(stream);
+                    video.play();
+                }, errBack);
+            }
+        }, 
+        false);
+    </script>
+</body>
+</html>
